@@ -1,6 +1,6 @@
-# Simple Tarantool Cartridge-based application
+# Simple Tarantool CRUD application
 
-This a simplest application based on Tarantool Cartridge.
+That is a demo of Tarantool application. It uses [`Tarantool Cartridge`](https://github.com/tarantool/cartridge.git) and [`crud`](https://github.com/tarantool/crud.git) module to provide CRUD API over distributed cluster and exposes a part of its API via HTTP interface - see [`OpenAPI`](./docs/openapi.yml).
 
 ## Quick start
 
@@ -13,10 +13,13 @@ cartridge replicasets setup --bootstrap-vshard
 ```
 
 Now you can visit http://localhost:8081 and see your application's Admin Web UI.
+CRUD API could be accessed on instances with `app.custom.router` role enabled.
 
 **Note**, that application stateboard is always started by default.
 See [`.cartridge.yml`](./.cartridge.yml) file to change this behavior.
 
+To configure database scheme - refer to [`Cartridge documentation`](https://www.tarantool.io/en/doc/latest/book/cartridge/cartridge_admin/#updating-the-configuration) and [`DDL docs`](https://github.com/tarantool/ddl).
+For the purposes of the demo you can just proceed to `Code` tab in Web UI and uncomment example schema.
 ## Application
 
 Application entry point is [`init.lua`](./init.lua) file.
@@ -27,13 +30,12 @@ It configures package search path to correctly start application on production
 
 ## Roles
 
-Application has one simple role, [`app.roles.custom`](./app/roles/custom.lua).
-It exposes `/hello` and `/metrics` endpoints:
+Application has 2 simple role, [`app.roles.router`](./app/roles/router.lua) and [`app.roles.storage`](.app/roles/storage.lua).
 
-```bash
-curl localhost:8081/hello
-curl localhost:8081/metrics
-```
+Those implements simplified CRUD API over HTTP.
+Router has a builtin HTTP server exposing a few endpoints - see [`OpenAPI`](./docs/openapi.yml). That roles "routes" requests to storages to retrive data according to sharding keys that is so external client does not care about cluster topology and sharding mechanics at all.
+
+Storage is role for instances that actually stores data.
 
 Also, Cartridge roles [are registered](./init.lua)
 (`vshard-storage`, `vshard-router` and `metrics`).
@@ -51,39 +53,3 @@ It is used by `cartridge start`.
 
 Topology configuration is described in [`replicasets.yml`](./replicasets.yml).
 It is used by `cartridge replicasets setup`.
-
-## Tests
-
-Simple unit and integration tests are placed in [`test`](./test) directory.
-
-First, we need to install test dependencies:
-
-```bash
-./deps.sh
-```
-
-Then, run linter:
-
-```bash
-.rocks/bin/luacheck .
-```
-
-Now we can run tests:
-
-```bash
-cartridge stop  # to prevent "address already in use" error
-.rocks/bin/luatest -v
-```
-
-## Admin
-
-Application has admin function [`probe`](./app/admin.lua) configured.
-You can use it to probe instances:
-
-```bash
-cartridge start -d  # if you've stopped instances
-cartridge admin probe \
-  --name joker-demo \
-  --run-dir ./tmp/run \
-  --uri localhost:3302
-```

@@ -28,10 +28,10 @@ local function apply_config(conf, opts) -- luacheck: no unused args
 end
 
 return {
-    role_name = 'app.roles.custom',
+    role_name = 'app.roles.storage',
     init = init,
     stop = stop,
     validate_config = validate_config,
     apply_config = apply_config,
-    -- dependencies = {'cartridge.roles.vshard-router'},
+    dependencies = {'cartridge.roles.crud-storage'},
 }

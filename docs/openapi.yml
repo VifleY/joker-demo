@@ -1,0 +1,104 @@
+---
+openapi: 3.0.0
+info:
+  title: CRUD app
+  description: |
+    CRUD app
+  contact:
+    email: dkoltsov@picodata.io
+  version: 0.0.0
+servers:
+  - url: localhost:8081
+    description: well, an app you run locally
+paths:
+  /crud/{space_name}:
+    get:
+      description: Get a record by primary key
+      parameters:
+        - in: query
+          name: primary key of a record. For the purpose of simplicity this demo accepts only numbers as primary key for HTTP API
+          schema:
+             type: number
+      responses:
+        "200":
+          description: enjoy your record
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rows:
+                    type: array
+                    description: array of records retrieved. In this app this would be an array of one (or none if none were found) record as we request data by primary key
+                  metadata:
+                    type: object
+                    description: description of your space
+        "500":
+          description: Well, as it is - an Internal Server Error
+    put:
+      description: Insert a new record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: object that matches your space schema
+      responses:
+        "200":
+          description: Record inserted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rows:
+                    type: array
+                    description: array of records inserted. In this app this would be an array of one record as we insert only one record
+                  metadata:
+                    type: object
+                    description: description of your space
+        "500":
+          description: Well, as it is - an Internal Server Error (or Duplicate key or something else - that demo doesn't really handle erros)
+    post:
+      description: Replace record
+      parameters:
+        - in: query
+          name: primary key of a record. For the purpose of simplicity this demo accepts only numbers as primary key for HTTP API
+          schema:
+             type: number
+      responses:
+        "200":
+          description: Record replaced
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rows:
+                    type: array
+                    description: array of records replaced. In this app this would be an array of one record as we replace only one record
+                  metadata:
+                    type: object
+                    description: description of your space
+        "500":
+          description: Well, as it is - an Internal Server Error (or Duplicate key or something else - that demo doesn't really handle erros)
+    delete:
+      description: Delete record
+      responses:
+        "200":
+          description: Record deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rows:
+                    type: array
+                    description: array of records deleted. In this app this would be an array of one record as we delete by primary key
+                  metadata:
+                    type: object
+                    description: description of your space
+        "500":
+          description: Well, as it is - an Internal Server Error
+
+

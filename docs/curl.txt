@@ -1,0 +1,23 @@
+## GET
+curl --location --request GET 'http://localhost:8081/crud/customer?key=1' \
+--data-raw ''
+
+## PUT
+curl --location --request PUT 'http://localhost:8081/crud/customer' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "customer_id": 1,
+    "fullname": "customer"
+}'
+
+## POST
+curl --location --request POST 'http://localhost:8081/crud/customer' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "customer_id": 1,
+    "fullname": "customer_new"
+}'
+
+## DELETE
+curl --location --request DELETE 'http://localhost:8081/crud/customer?key=1' \
+--data-raw ''
